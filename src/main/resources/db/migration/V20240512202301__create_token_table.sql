@@ -2,7 +2,7 @@
 CREATE TABLE payment_method_info
 (
   payment_method_id    char(32)       NOT NULL,
-  customer_di          char(32)       NOT NULL,
+  customer_di          char(64)       NOT NULL,
   mid                  char(32)       NOT NULL,
   method               varchar(50)    NOT NULL,
   card_info            json           NULL,
