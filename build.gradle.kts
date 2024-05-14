@@ -1,9 +1,12 @@
+import com.google.protobuf.gradle.id
+
 plugins {
   java
   id("org.springframework.boot") version "3.2.5"
   id("io.spring.dependency-management") version "1.1.4"
   id("org.asciidoctor.jvm.convert") version "3.3.2"
   id("com.epages.restdocs-api-spec") version "0.18.4"
+  id("com.google.protobuf") version "0.9.4"
 }
 
 group = "song.pg"
@@ -21,6 +24,22 @@ configurations {
 
 repositories {
   mavenCentral()
+  google()
+}
+
+val grpcVersion = "3.19.4"
+val grpcKotlinVersion = "1.2.1"
+val grpcProtoVersion = "1.44.1"
+
+sourceSets{
+  getByName("main"){
+    java {
+      srcDirs(
+        "build/generated/source/proto/main/java",
+        "build/generated/source/proto/main/grpc"
+      )
+    }
+  }
 }
 
 extra["snippetsDir"] = file("build/generated-snippets")
@@ -37,6 +56,18 @@ dependencies {
   implementation("com.fasterxml.jackson.core:jackson-databind")
   implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
   implementation("com.fasterxml.jackson.datatype:jackson-datatype-jdk8:2.15.2")
+
+  implementation("io.grpc:grpc-stub:$grpcProtoVersion")
+  implementation("io.grpc:grpc-protobuf:$grpcProtoVersion")
+  implementation("io.grpc:grpc-netty-shaded:$grpcProtoVersion")
+  implementation("com.google.protobuf:protobuf-java-util:3.25.1")
+  implementation("com.google.protobuf:protobuf-java:3.25.1")
+  implementation("net.devh:grpc-server-spring-boot-starter:2.15.0.RELEASE")
+  compileOnly("org.apache.tomcat:annotations-api:6.0.53")
+
+  implementation("io.jsonwebtoken:jjwt-api:0.11.2")
+  implementation("io.jsonwebtoken:jjwt-impl:0.11.2")
+  implementation("io.jsonwebtoken:jjwt-jackson:0.11.2")
 
   compileOnly("org.projectlombok:lombok")
   runtimeOnly("com.h2database:h2")
@@ -69,4 +100,23 @@ openapi3 {
   this.description = "Post Service API description"
   this.version = "1.0.0"
   this.format = "yaml"
+}
+
+protobuf {
+  protoc {
+    artifact = "com.google.protobuf:protoc:$grpcVersion"
+  }
+
+  plugins {
+    id("grpc") {
+      artifact = "io.grpc:protoc-gen-grpc-java:$grpcProtoVersion"
+    }
+  }
+  generateProtoTasks {
+    all().forEach {
+      it.plugins {
+        id("grpc")
+      }
+    }
+  }
 }
