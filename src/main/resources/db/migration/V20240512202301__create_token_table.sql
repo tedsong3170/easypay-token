@@ -8,8 +8,12 @@ CREATE TABLE payment_method_info
   card_info            json           NULL,
   create_at            timestamp      NOT NULL,
   deleted_at           timestamp      NULL,
+  nick_name            varchar(50)    NOT NULL,
   PRIMARY KEY (payment_method_id)
 );
+
+create index idx_payment_method_info_di on payment_method_info(customer_di);
+create index idx_payment_method_info_mid on payment_method_info(mid);
 
 -- 테이블 Comment 설정 SQL - payment_method_info
 COMMENT ON TABLE payment_method_info IS '결제수단정보';
@@ -34,6 +38,9 @@ COMMENT ON COLUMN payment_method_info.create_at IS '등록일';
 
 -- 컬럼 Comment 설정 SQL - payment_method_info.deleted_at
 COMMENT ON COLUMN payment_method_info.deleted_at IS '삭제일';
+
+-- 컬럼 Comment 설정 SQL - payment_method_info.nick_name
+COMMENT ON COLUMN payment_method_info.nick_name IS '별칭';
 
 
 
