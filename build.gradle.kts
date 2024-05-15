@@ -80,6 +80,7 @@ dependencies {
 
   testImplementation("org.springframework.boot:spring-boot-starter-test")
   testImplementation("org.springframework.restdocs:spring-restdocs-mockmvc")
+  testImplementation("org.springframework.security:spring-security-test")
 
   testImplementation("com.epages:restdocs-api-spec:0.18.4")
   testImplementation("com.epages:restdocs-api-spec-mockmvc:0.18.4")
@@ -99,9 +100,9 @@ tasks.asciidoctor {
 }
 
 openapi3 {
-  this.setServer("http://localhost:8080")
-  this.title = "Post Service API"
-  this.description = "Post Service API description"
+  this.setServer("http://localhost:8081")
+  this.title = "테스트PG 토큰발급시스템 API"
+  this.description = "테스트 PG 토큰발급시스템 API 명세서"
   this.version = "1.0.0"
   this.format = "yaml"
 }

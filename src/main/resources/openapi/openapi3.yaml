@@ -1,0 +1,100 @@
+openapi: 3.0.1
+info:
+  title: 테스트PG 토큰발급시스템 API
+  description: 테스트 PG 토큰발급시스템 API 명세서
+  version: 1.0.0
+servers:
+- url: http://localhost:8081
+tags: []
+paths:
+  /api/token/verify/v1:
+    post:
+      tags:
+      - api
+      summary: 토큰 검증 및 카드정보 요청
+      description: 토큰 검증 및 카드정보 요청
+      operationId: payment/token/verify
+      parameters:
+      - name: Authorization
+        in: header
+        description: Bearer 결제토큰
+        required: true
+        schema:
+          type: string
+        example: Bearer eyJhbGciOiJIUzI1NiJ9.eyJwYXltZW50TWV0aG9kSWQiOiJhNzg1NTUxYjljMzk0OTgyOWZjZTI0OTJjZGExY2E1OSIsInBheW1lbnRJZCI6ImE5ZDA0ZTQ4ODA1NTRkNmVhODBlMjE4ZWM4YTI1NmMxIiwiZXhwZWN0QW1vdW50IjoxMDAwMDAwLCJpYXQiOjE3MTU3NzQ0MzYsImV4cCI6MTcxNTc3NDczNn0.xzFmr6cnxHecvj_DEKSbUQmEDrZOodd2AHB_PueMkzs
+      responses:
+        "200":
+          description: "200"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/api-token-verify-v1-539963222'
+              examples:
+                payment/token/verify:
+                  value: "{\"code\":\"200\",\"message\":\"성공\",\"data\":{\"cardNumber1\"\
+                    :\"1234\",\"cardNumber2\":\"1234\",\"cardNumber3\":\"1234\",\"\
+                    cardNumber4\":\"1234\",\"expireYear\":2023,\"expireMonth\":12,\"\
+                    cvc\":123,\"password\":12,\"cardHolderName\":\"홍길동\"}}"
+      security:
+      - bearerAuthJWT: []
+components:
+  schemas:
+    api-token-verify-v1-539963222:
+      required:
+      - code
+      - data
+      - message
+      type: object
+      properties:
+        code:
+          type: string
+          description: 응답코드
+        data:
+          required:
+          - cardHolderName
+          - cardNumber1
+          - cardNumber2
+          - cardNumber3
+          - cardNumber4
+          - cvc
+          - expireMonth
+          - expireYear
+          - password
+          type: object
+          properties:
+            cvc:
+              type: number
+              description: 카드 CVC
+            password:
+              type: number
+              description: 비밀번호 앞 2글자
+            cardNumber4:
+              type: string
+              description: 카드 번호 네번째 4자리(암호화)
+            cardHolderName:
+              type: string
+              description: 카드 소유주 이름
+            expireMonth:
+              type: number
+              description: 카드 만료 월
+            cardNumber3:
+              type: string
+              description: 카드 번호 세번째 4자리(암호화)
+            cardNumber2:
+              type: string
+              description: 카드 번호 두번째 4자리
+            cardNumber1:
+              type: string
+              description: 카드 번호 첫번째 4자리
+            expireYear:
+              type: number
+              description: 카드 만료 연도
+          description: 응답결과
+        message:
+          type: string
+          description: 응답메세지
+  securitySchemes:
+    bearerAuthJWT:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

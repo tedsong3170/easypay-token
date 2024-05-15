@@ -1,4 +1,3 @@
-
 INSERT INTO PUBLIC.CARD_BIN_INFO (BIN, COMPANY, OWNER_TYPE, BRAND, APPROVAL_URL)
 VALUES ('123412', '현대다이너스', '개인', '다이너스', 'http://localhost:8082/api/approval/v1');
 INSERT INTO PUBLIC.CARD_BIN_INFO (BIN, COMPANY, OWNER_TYPE, BRAND, APPROVAL_URL)
@@ -53,3 +52,4 @@ INSERT INTO PUBLIC.CARD_BIN_INFO (BIN, COMPANY, OWNER_TYPE, BRAND, APPROVAL_URL)
 VALUES ('365646', '현대다이너스', '개인', '다이너스', 'http://localhost:8082/api/approval/v1');
 INSERT INTO PUBLIC.CARD_BIN_INFO (BIN, COMPANY, OWNER_TYPE, BRAND, APPROVAL_URL)
 VALUES ('370299', '현대아멕스개인', '개인', '아멕스', 'http://localhost:8082/api/approval/v1');
+
