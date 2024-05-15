@@ -77,3 +77,33 @@ COMMENT ON COLUMN payment_token_info.issue_at IS '발급일시';
 
 -- 컬럼 Comment 설정 SQL - payment_token_info.verify_at
 COMMENT ON COLUMN payment_token_info.verify_at IS '유효성확인일시';
+
+
+-- 테이블 생성 SQL - card_bin_info
+CREATE TABLE card_bin_info
+(
+  bin          varchar(50)    NOT NULL,
+  company      varchar(50)    NOT NULL,
+  owner_type    varchar(50)    NOT NULL,
+  brand        varchar(50)    NOT NULL,
+  approval_url  varchar(300)   NOT NULL,
+  PRIMARY KEY (bin)
+);
+
+-- 테이블 Comment 설정 SQL - card_bin_info
+COMMENT ON TABLE card_bin_info IS '신용카드BIN정보';
+
+-- 컬럼 Comment 설정 SQL - card_bin_info.bin
+COMMENT ON COLUMN card_bin_info.bin IS 'BIN번호';
+
+-- 컬럼 Comment 설정 SQL - card_bin_info.company
+COMMENT ON COLUMN card_bin_info.company IS '발급사';
+
+-- 컬럼 Comment 설정 SQL - card_bin_info.owner_type
+COMMENT ON COLUMN card_bin_info.owner_type IS '카드구분';
+
+-- 컬럼 Comment 설정 SQL - card_bin_info.brand
+COMMENT ON COLUMN card_bin_info.brand IS '브랜드';
+
+-- 컬럼 Comment 설정 SQL - card_bin_info.approval_url
+COMMENT ON COLUMN card_bin_info.approval_url IS '승인URL';

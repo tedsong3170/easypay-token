@@ -6,6 +6,7 @@ import net.devh.boot.grpc.server.service.GrpcService;
 import song.pg.payment.token.create.v1.proto.TokenCreateGrpc;
 import song.pg.payment.token.create.v1.proto.TokenCreateV1;
 import song.pg.token.models.common.CommonResponse;
+import song.pg.token.models.payment.token.PaymentTokenInfo;
 import song.pg.token.utils.ExceptionEnum;
 import song.pg.token.utils.KnownException;
 
@@ -22,7 +23,7 @@ public class PaymentTokenCreateGrpcHandler extends TokenCreateGrpc.TokenCreateIm
 
     try
     {
-      CommonResponse<String> token = paymentTokenService.createToken(
+      CommonResponse<PaymentTokenInfo> token = paymentTokenService.createToken(
         request.getDi(),
         request.getMid(),
         request.getPaymentId(),
@@ -31,7 +32,8 @@ public class PaymentTokenCreateGrpcHandler extends TokenCreateGrpc.TokenCreateIm
       );
 
       response = TokenCreateV1.Response.newBuilder()
-        .setToken(token.getData())
+        .setToken(token.getData().getToken())
+        .setApprovalUrl(token.getData().getApprovalUrl())
         .setCode(token.getCode())
         .setMessage(token.getMessage())
         .build();

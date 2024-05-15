@@ -30,6 +30,8 @@ public enum ExceptionEnum
   INVALID_PAYMENT_REQUEST(400, "CPS0003", "유효하지 않은 결제 요청입니다."),
   NOT_EXIST_PAYMENT_LEDGER(400, "CPS0004", "존재하지 않는 결제원장입니다."),
 
+  UNKNOWN_PAYMENT_BIN_INFO(500, "CPI0001", "알 수 없는 카드 BIN 정보입니다."),
+
   ;
 
   private final int status;

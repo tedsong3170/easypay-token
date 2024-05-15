@@ -4,14 +4,21 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import song.pg.token.config.security.OneTimePaymentToken;
+import song.pg.token.models.common.CardBinInfoEntity;
 import song.pg.token.models.common.CommonResponse;
 import song.pg.token.models.payment.method.PaymentMethodInfoEntity;
+import song.pg.token.models.payment.method.PaymentMethodType;
 import song.pg.token.models.payment.method.card.PaymentMethodCardInfo;
 import song.pg.token.models.payment.token.PaymentTokenEntity;
+import song.pg.token.models.payment.token.PaymentTokenInfo;
+import song.pg.token.repository.CardBinInfoRepository;
 import song.pg.token.repository.PaymentMethodRepository;
 import song.pg.token.repository.PaymentTokenRepository;
 import song.pg.token.token.PaymentTokenService;
-import song.pg.token.utils.*;
+import song.pg.token.utils.Aes256Util;
+import song.pg.token.utils.ExceptionEnum;
+import song.pg.token.utils.JwtUtil;
+import song.pg.token.utils.KnownException;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -22,14 +29,15 @@ public class PaymentTokenServiceImpl implements PaymentTokenService
 {
   private final PaymentTokenRepository paymentTokenRepository;
   private final PaymentMethodRepository paymentMethodRepository;
+  private final CardBinInfoRepository cardBinInfoRepository;
   private final JwtUtil JwtUtil;
 
   @Override
-  public CommonResponse<String> createToken(final String di,
-                                            final String mid,
-                                            final String paymentId,
-                                            final String paymentMethodId,
-                                            final Long expectAmount
+  public CommonResponse<PaymentTokenInfo> createToken(final String di,
+                                                      final String mid,
+                                                      final String paymentId,
+                                                      final String paymentMethodId,
+                                                      final Long expectAmount
   )
   {
     PaymentTokenEntity paymentTokenEntity = paymentTokenRepository.findByPaymentId(paymentId);
@@ -52,10 +60,33 @@ public class PaymentTokenServiceImpl implements PaymentTokenService
 
     paymentTokenRepository.save(paymentTokenEntity);
 
+    PaymentMethodInfoEntity paymentMethodEntity = paymentMethodRepository.findById(paymentMethodId)
+      .orElseThrow(() -> new KnownException(ExceptionEnum.DOSE_NOT_EXIST_PAYMENT_METHOD));
+
+    if (paymentMethodEntity.getMethod().equals(PaymentMethodType.CARD.name()))
+    {
+      PaymentMethodCardInfo cardInfo = new PaymentMethodCardInfo(paymentMethodEntity.getCardInfo());
+      CardBinInfoEntity cardBinInfoEntity = cardBinInfoRepository.findById(cardInfo.getCardNumber1() + cardInfo.getCardNumber2().substring(0, 2))
+        .orElseThrow(() -> new KnownException(ExceptionEnum.UNKNOWN_PAYMENT_BIN_INFO));
+
+      return new CommonResponse<>(
+        "200",
+        "성공",
+        new PaymentTokenInfo(
+          paymentTokenEntity.getToken(),
+          cardBinInfoEntity.getApprovalUrl()
+        )
+      );
+
+    }
+
     return new CommonResponse<>(
       "200",
       "성공",
-      paymentTokenEntity.getToken()
+      new PaymentTokenInfo(
+        paymentTokenEntity.getToken(),
+        ""
+      )
     );
   }
 
