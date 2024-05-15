@@ -17,6 +17,11 @@ public enum ExceptionEnum
   INVALID_TO_JSON_FORMAT(400, "1009", "유효하지 않은 JSON 직렬화 형식입니다."),
 
   ALREADY_EXIST_TOKEN(400, "1010", "이미 등록된 토큰입니다."),
+  DOSE_NOT_EXIST_TOKEN(400, "1011", "존재하지 않는 토큰입니다."),
+  CHANGE_DETECTED_TOKEN(400, "1012", "변경된 토큰입니다."),
+
+  DOSE_NOT_EXIST_PAYMENT_METHOD(400, "1013", "존재하지 않는 결제 수단입니다."),
+  ALREADY_USED_TOKEN(400, "1014", "이미 사용된 토큰입니다."),
 
   UNKNOWN_ERROR(500, "9999", "알 수 없는 오류가 발생하였습니다.")
 

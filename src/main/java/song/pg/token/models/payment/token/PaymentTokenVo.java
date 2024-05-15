@@ -1,9 +1,16 @@
 package song.pg.token.models.payment.token;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
+@Getter
+@NoArgsConstructor
+@AllArgsConstructor
 public class PaymentTokenVo implements Serializable
 {
   private static final long serialVersionUID = -6137794869034989288L;

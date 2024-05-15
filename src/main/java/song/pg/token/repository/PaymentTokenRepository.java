@@ -5,5 +5,6 @@ import song.pg.token.models.payment.token.PaymentTokenEntity;
 
 public interface PaymentTokenRepository extends JpaRepository<PaymentTokenEntity, String>
 {
+
   PaymentTokenEntity findByPaymentId(String paymentId);
 }

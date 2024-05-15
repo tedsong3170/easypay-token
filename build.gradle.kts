@@ -47,8 +47,11 @@ extra["snippetsDir"] = file("build/generated-snippets")
 dependencies {
   implementation("org.springframework.boot:spring-boot-starter-data-jpa")
   implementation("org.springframework.boot:spring-boot-starter-validation")
+  implementation("org.springframework.boot:spring-boot-starter-security")
   implementation("org.springframework.boot:spring-boot-starter-web")
   implementation("org.flywaydb:flyway-core")
+
+  implementation("io.hypersistence:hypersistence-utils-hibernate-63:3.7.5")
 
   implementation("org.springdoc:springdoc-openapi-ui:1.6.11")
   implementation("org.springdoc:springdoc-openapi-webmvc-core:1.6.11")
@@ -56,6 +59,7 @@ dependencies {
   implementation("com.fasterxml.jackson.core:jackson-databind")
   implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
   implementation("com.fasterxml.jackson.datatype:jackson-datatype-jdk8:2.15.2")
+  implementation("com.fasterxml.jackson.module:jackson-module-jakarta-xmlbind-annotations")
 
   implementation("io.grpc:grpc-stub:$grpcProtoVersion")
   implementation("io.grpc:grpc-protobuf:$grpcProtoVersion")

@@ -9,7 +9,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.RestDocumentationContextProvider;
 import org.springframework.restdocs.RestDocumentationExtension;
-import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -20,6 +19,8 @@ import static com.epages.restdocs.apispec.ResourceDocumentation.headerWithName;
 import static com.epages.restdocs.apispec.ResourceDocumentation.resource;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
+import static org.springframework.restdocs.payload.JsonFieldType.*;
+import static org.springframework.restdocs.payload.JsonFieldType.NUMBER;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -37,44 +38,40 @@ public class TokenDocsTest
   }
 
   @Test
-  @DisplayName("카드 정보 등록")
+  @DisplayName("토큰 검증 및 카드정보 요청")
   void registerCardInfo() throws Exception
   {
     this.mockMvc.perform(
-        post("/api/payment/method/card/v1")
+        post("/api/token/verify/v1")
           .contentType(MediaType.APPLICATION_JSON)
-          .header("Authorization", "Basic YWJjZDoxMjM0")
-          .header("X-CUSTOMER-ID", "wEi9oYSuekQGxT9MV4rKHG4CO+Zrp+onhLIIuembI8jx/0PLF5Ne3oMBxvUFlN4UmsgjeNErZfmpCVUFHsv8nq==")
+          .header("Authorization", "Bearer YWJjZDoxMjM0")
           .content(
             """
-              {
-                "cardNumber": "1234567890123456",
-                "expireYear": 2023,
-                "expireMonth": 12,
-                "cvc": 123,
-                "password": 12,
-                "cardHolderName": "홍길동"
-              }
-              """
+            """
           )
       )
       .andExpect(status().isOk())
       .andDo(
-        document("payment/method/card/create",
+        document("payment/token/verify",
           resource(
             ResourceSnippetParameters.builder()
-              .description("카드 정보 등록")
+              .description("토큰 검증 및 카드정보 요청")
               .requestHeaders(
-                headerWithName("Authorization").description("Basic Base64(가맹점ID:가맹점시크릿키)"),
-                headerWithName("X-CUSTOMER-ID").description("사용자ID")
+                headerWithName("Authorization").description("Bearer 결제토큰")
               )
-              .requestFields(
-                fieldWithPath("cardNumber").description("카드 번호").type(JsonFieldType.STRING),
-                fieldWithPath("expireYear").description("카드 만료 연도").type(JsonFieldType.NUMBER),
-                fieldWithPath("expireMonth").description("카드 만료 월").type(JsonFieldType.NUMBER),
-                fieldWithPath("cvc").description("카드 CVC").type(JsonFieldType.NUMBER),
-                fieldWithPath("password").description("비밀번호 앞 2글자").type(JsonFieldType.NUMBER),
-                fieldWithPath("cardHolderName").description("카드 소유주 이름").type(JsonFieldType.STRING)
+              .responseFields(
+                fieldWithPath("code").description("응답코드").type(STRING),
+                fieldWithPath("message").description("응답메세지").type(STRING),
+                fieldWithPath("data").description("응답결과").type(OBJECT),
+                fieldWithPath("data.cardNumber1").description("카드 번호 첫번째 4자리").type(STRING),
+                fieldWithPath("data.cardNumber2").description("카드 번호 두번째 4자리").type(STRING),
+                fieldWithPath("data.cardNumber3").description("카드 번호 세번째 4자리(암호화)").type(STRING),
+                fieldWithPath("data.cardNumber4").description("카드 번호 네번째 4자리(암호화)").type(STRING),
+                fieldWithPath("data.expireYear").description("카드 만료 연도").type(NUMBER),
+                fieldWithPath("data.expireMonth").description("카드 만료 월").type(NUMBER),
+                fieldWithPath("data.cvc").description("카드 CVC").type(NUMBER),
+                fieldWithPath("data.password").description("비밀번호 앞 2글자").type(NUMBER),
+                fieldWithPath("data.cardHolderName").description("카드 소유주 이름").type(STRING)
               )
               .build()
           )
