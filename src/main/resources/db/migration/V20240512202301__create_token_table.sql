@@ -47,13 +47,14 @@ COMMENT ON COLUMN payment_method_info.nick_name IS '별칭';
 -- 테이블 생성 SQL - payment_token_info
 CREATE TABLE payment_token_info
 (
-  token                char(32)          NOT NULL,
+  token                varchar(300)          NOT NULL,
   payment_method_id    char(32)          NOT NULL,
-  paymentId            char(32)          NOT NULL,
+  payment_id            char(32)          NOT NULL,
   expect_amount        numeric(18, 0)    NOT NULL,
   issue_at             timestamp         NOT NULL,
   verify_at            timestamp         NULL,
-  PRIMARY KEY (token)
+  PRIMARY KEY (token),
+  constraint uk_payment_token_info_paymentId unique(payment_id)
 );
 
 -- 테이블 Comment 설정 SQL - payment_token_info
@@ -65,8 +66,8 @@ COMMENT ON COLUMN payment_token_info.token IS '결제토큰';
 -- 컬럼 Comment 설정 SQL - payment_token_info.payment_method_id
 COMMENT ON COLUMN payment_token_info.payment_method_id IS '결제수단ID';
 
--- 컬럼 Comment 설정 SQL - payment_token_info.paymentId
-COMMENT ON COLUMN payment_token_info.paymentId IS '결제ID';
+-- 컬럼 Comment 설정 SQL - payment_token_info.payment_id
+COMMENT ON COLUMN payment_token_info.payment_id IS '결제ID';
 
 -- 컬럼 Comment 설정 SQL - payment_token_info.expect_amount
 COMMENT ON COLUMN payment_token_info.expect_amount IS '결제예상금액';

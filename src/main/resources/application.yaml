@@ -22,3 +22,6 @@ server:
 grpc:
   server:
     port: 50051
+
+jwt:
+  secret: 71d701de96d24d69a338eb7e963e2a80
