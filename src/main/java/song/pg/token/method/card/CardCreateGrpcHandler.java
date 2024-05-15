@@ -22,6 +22,7 @@ public class CardCreateGrpcHandler extends PaymentMethodCardCreateServiceGrpc.Pa
   public void createCardInfo(MethodCardCreateV1.Request request, StreamObserver<MethodCardCreateV1.Response> responseObserver)
   {
     MethodCardCreateV1.Response response;
+
     try
     {
       CommonResponse<ResponsePaymentMethod> registeredCardInfo = paymentMethodService.registerCardInfo(

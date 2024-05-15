@@ -40,6 +40,13 @@ public class PaymentTokenServiceImpl implements PaymentTokenService
                                                       final Long expectAmount
   )
   {
+    /**
+     * 1. 동일한 결제에 대해 토큰이 존재하는지 확인
+     * 2. 결제수단 정보 조회
+     * 3-1. 카드의 경우 카드 BIN 정보 조회하여 승인URL 반환
+     * 3-2. 그 외 결제수단의 경우 조회하지 않음
+     * 4. 토큰 생성
+     */
     PaymentTokenEntity paymentTokenEntity = paymentTokenRepository.findByPaymentId(paymentId);
 
     if (paymentTokenEntity != null)
@@ -93,6 +100,14 @@ public class PaymentTokenServiceImpl implements PaymentTokenService
   @Override
   public CommonResponse<PaymentMethodCardInfo> verifyToken()
   {
+    /**
+     * 1. 토큰 정보 조회
+     * 2. 토큰 사용 여부 확인
+     * 3. 결제수단 정보 조회
+     * 4. 카드번호 복호화
+     * 5. 토큰 사용 처리
+     * 6. 결제수단 정보 응답
+     */
     OneTimePaymentToken tokenInfo = (OneTimePaymentToken) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
     PaymentTokenEntity paymentTokenEntity = paymentTokenRepository.findById(tokenInfo.getPaymentTokenVo().getToken())
@@ -106,19 +121,24 @@ public class PaymentTokenServiceImpl implements PaymentTokenService
     PaymentMethodInfoEntity paymentMethodEntity = paymentMethodRepository.findById(tokenInfo.getPaymentTokenVo().getPaymentMethodId())
       .orElseThrow(() -> new KnownException(ExceptionEnum.DOSE_NOT_EXIST_PAYMENT_METHOD));
 
-    PaymentMethodCardInfo cardInfo = new PaymentMethodCardInfo(paymentMethodEntity.getCardInfo());
+    if (paymentMethodEntity.getMethod().equals(PaymentMethodType.CARD.name()))
+    {
+      PaymentMethodCardInfo cardInfo = new PaymentMethodCardInfo(paymentMethodEntity.getCardInfo());
 
-    cardInfo.setCardNumber3(Aes256Util.decrypt(cardInfo.getCardNumber3(), paymentMethodEntity.getCustomerDi().substring(0, 32)));
-    cardInfo.setCardNumber4(Aes256Util.decrypt(cardInfo.getCardNumber4(), paymentMethodEntity.getCustomerDi().substring(0, 32)));
+      cardInfo.setCardNumber3(Aes256Util.decrypt(cardInfo.getCardNumber3(), paymentMethodEntity.getCustomerDi().substring(0, 32)));
+      cardInfo.setCardNumber4(Aes256Util.decrypt(cardInfo.getCardNumber4(), paymentMethodEntity.getCustomerDi().substring(0, 32)));
 
-    paymentTokenEntity.setVerifyAt(LocalDateTime.now());
+      paymentTokenEntity.setVerifyAt(LocalDateTime.now());
+      paymentTokenRepository.save(paymentTokenEntity);
 
-    paymentTokenRepository.save(paymentTokenEntity);
-
-    return new CommonResponse<>(
-      "200",
-      "성공",
-      cardInfo
-    );
+      return new CommonResponse<>(
+        "200",
+        "성공",
+        cardInfo
+      );
+    }
+    else {
+      throw new KnownException(ExceptionEnum.UNKNOWN_PAYMENT_METHOD);
+    }
   }
 }

@@ -34,18 +34,27 @@ public class PaymentMethodServiceImpl implements PaymentMethodService
       .toList();
   }
 
+  private Boolean isCardNumberEncrypted(final String cardNumber, final String key)
+  {
+    return CARD_NUMBER_PATTERN.matcher(
+      Aes256Util.decrypt(cardNumber, key)
+    ).find();
+  }
+
   @Override
   public CommonResponse<ResponsePaymentMethod> registerCardInfo(final String di,
                                                                 final String mid,
                                                                 final RequestPaymentMethodCardRegister requestPaymentMethodCardRegister
   )
   {
-    if (!CARD_NUMBER_PATTERN.matcher(
-        Aes256Util.decrypt(requestPaymentMethodCardRegister.getCardNumber3(), di.substring(0, 32))
-      ).find() ||
-      !CARD_NUMBER_PATTERN.matcher(
-        Aes256Util.decrypt(requestPaymentMethodCardRegister.getCardNumber4(), di.substring(0, 32))
-      ).find()
+    /**
+     * 1. 카드번호 암호화 확인
+     * 2. 닉네임 중복 확인
+     * 3. 카드 중복 확인
+     * 4. 저장
+     */
+    if (!isCardNumberEncrypted(requestPaymentMethodCardRegister.getCardNumber3(), di.substring(0, 32)) ||
+      !isCardNumberEncrypted(requestPaymentMethodCardRegister.getCardNumber4(), di.substring(0, 32))
     )
     {
       throw new KnownException(ExceptionEnum.INVALID_CARD_NUMBER);

@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import song.pg.token.models.common.CommonResponse;
 import song.pg.token.models.payment.method.card.PaymentMethodCardInfo;
+import song.pg.token.utils.ExceptionEnum;
+import song.pg.token.utils.KnownException;
 
 @RestController
 @Slf4j
@@ -22,7 +24,20 @@ public class PaymentTokenController
   {
     log.info("토큰 검증 시작");
 
-    return ResponseEntity.ok()
-      .body(paymentTokenService.verifyToken());
+    try
+    {
+      return ResponseEntity.ok()
+        .body(paymentTokenService.verifyToken());
+    }
+    catch (KnownException e)
+    {
+      return ResponseEntity.badRequest()
+        .body(new CommonResponse<>(e.getCode(), e.getMessage(), null));
+    }
+    catch (Exception e)
+    {
+      return ResponseEntity.badRequest()
+        .body(new CommonResponse<>(ExceptionEnum.UNKNOWN_ERROR.getCode(), ExceptionEnum.UNKNOWN_ERROR.getMessage(), null));
+    }
   }
 }
